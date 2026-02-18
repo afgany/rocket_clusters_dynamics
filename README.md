@@ -5,6 +5,8 @@ Analytical model for coupled thrust oscillation dynamics in multi-engine rocket 
 Implements the framework from:
 
 > **"Coupled Resonance Dynamics of Multi-Engine Rocket Clusters: A Cross-Scale Analytical Framework"** — OR Ph.D., 2026
+>
+> **[Read the full paper (PDF)](Rocket_Clusters_Dynamics.pdf)**
 
 **Analytical model — not experimentally validated.**
 
