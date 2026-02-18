@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coupled-resonance-engine"
+version = "1.0.0"
+description = "Analytical model for coupled thrust oscillation dynamics in multi-engine rocket clusters"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "Oren Aharon"},
+]
+keywords = ["rocket", "thrust-oscillation", "combustion-instability", "multi-engine", "pogo"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.100",
+    "uvicorn[standard]>=0.23",
+    "httpx>=0.24",
+]
+plots = [
+    "matplotlib>=3.7",
+]
+cli = [
+    "typer[all]>=0.9",
+]
+notebook = [
+    "jupyter>=1.0",
+    "ipykernel>=6.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "httpx>=0.24",
+    "mypy>=1.0",
+    "ruff>=0.1",
+]
+all = [
+    "coupled-resonance-engine[api,plots,cli,notebook,dev]",
+]
+
+[project.scripts]
+cre = "cre.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/afgany/rocket_clusters_dynamics"
+Repository = "https://github.com/afgany/rocket_clusters_dynamics"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=cre --cov-report=term-missing"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
