@@ -5,7 +5,10 @@ WORKDIR /app
 COPY pyproject.toml .
 COPY src/ src/
 
-RUN pip install --no-cache-dir ".[api]"
+RUN pip install --no-cache-dir ".[api]" \
+    && useradd -r -s /bin/false cre
+
+USER cre
 
 EXPOSE 8000
 

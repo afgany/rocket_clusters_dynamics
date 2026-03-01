@@ -5,7 +5,7 @@ import io
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
 from cre.api.schemas import (
@@ -48,7 +48,15 @@ def plot_stability(req: StabilitySweepRequest):
 
 @router.post("/damping")
 def plot_damping(req: DampingSpectrumRequest):
-    cluster = get_cluster(req.cluster_name)
+    try:
+        cluster = get_cluster(req.cluster_name)
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    if req.ring_index >= len(cluster.rings):
+        raise HTTPException(
+            status_code=422,
+            detail=f"ring_index {req.ring_index} out of range, cluster has {len(cluster.rings)} rings (0-{len(cluster.rings) - 1})",
+        )
     ring = cluster.rings[req.ring_index]
     result = damping_spectrum_multi_env(ring.n_engines, DEFAULT_DAMPING, [EARTH_SL, LUNAR_VACUUM])
     fig = plot_damping_spectrum(result, zeta_crit=0.035)

@@ -1,6 +1,6 @@
 """Damping computation endpoints."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from cre.api.schemas import DampingSpectrumRequest, DampingSpectrumResponse
 from cre.configs.clusters import get_cluster
@@ -12,7 +12,15 @@ router = APIRouter(prefix="/damping", tags=["damping"])
 
 @router.post("/spectrum", response_model=DampingSpectrumResponse)
 def run_damping_spectrum(req: DampingSpectrumRequest):
-    cluster = get_cluster(req.cluster_name)
+    try:
+        cluster = get_cluster(req.cluster_name)
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    if req.ring_index >= len(cluster.rings):
+        raise HTTPException(
+            status_code=422,
+            detail=f"ring_index {req.ring_index} out of range, cluster has {len(cluster.rings)} rings (0-{len(cluster.rings) - 1})",
+        )
     ring = cluster.rings[req.ring_index]
     N = ring.n_engines
 

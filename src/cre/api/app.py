@@ -1,6 +1,9 @@
 """FastAPI application for the Coupled Resonance Engine."""
 
+import os
+
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from cre.api.routes import amplification, clusters, damping, engines, plots, stability
 from cre.models.results import DISCLAIMER
@@ -12,6 +15,17 @@ app = FastAPI(
         f"**{DISCLAIMER}**"
     ),
     version="1.0.0",
+)
+
+_cors_origins = os.environ.get("CRE_CORS_ORIGINS", "").split(",")
+_cors_origins = [o.strip() for o in _cors_origins if o.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins,
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
 
 app.include_router(engines.router)

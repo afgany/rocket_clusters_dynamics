@@ -1,27 +1,32 @@
 """Pydantic request/response schemas for the CRE REST API."""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from cre.models.results import DISCLAIMER
 
 
 class StabilitySweepRequest(BaseModel):
-    tau_min: float = 0.1e-3
-    tau_max: float = 5.0e-3
-    frequencies: list[float] = [50.0, 135.0, 56.0]
-    alpha_earth: float = 0.12
-    alpha_vacuum: float = 0.06
-    n_tau: int = 500
+    tau_min: float = Field(0.1e-3, gt=0, description="Min tau [s]")
+    tau_max: float = Field(5.0e-3, gt=0, description="Max tau [s]")
+    frequencies: list[float] = Field(
+        default=[50.0, 135.0, 56.0],
+        min_length=1,
+        max_length=50,
+        description="Frequencies to evaluate [Hz]",
+    )
+    alpha_earth: float = Field(0.12, ge=0)
+    alpha_vacuum: float = Field(0.06, ge=0)
+    n_tau: int = Field(500, ge=10, le=10_000)
 
 
 class DampingSpectrumRequest(BaseModel):
     cluster_name: str = "super_heavy"
-    ring_index: int = 2  # Default: outer ring (20 engines)
+    ring_index: int = Field(2, ge=0, description="Ring index (0-based)")
 
 
 class AmplificationSweepRequest(BaseModel):
-    n_min: int = 1
-    n_max: int = 40
+    n_min: int = Field(1, ge=1)
+    n_max: int = Field(40, ge=1, le=1000)
 
 
 class DisclaimerMixin(BaseModel):
